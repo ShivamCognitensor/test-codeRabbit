@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "LMS FinAI Service",
+    "_postman_id": "lms-finai-001",
+    "description": "Chatbot and Voice Bot for lead generation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:8007"},
+    {"key": "token", "value": ""},
+    {"key": "session_id", "value": "test-session-001"},
+    {"key": "campaign_id", "value": ""}
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chatbot",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/chat/message",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"Hello, I need information about personal loans\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Send Message (FAQ)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/chat/message",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"What documents are required for a loan?\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Send Message (Lender Help)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/chat/message",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"Help me choose a lender\",\n  \"context_type\": \"lender_selection\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Conversation",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/chat/conversation/{{session_id}}",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]
+          }
+        },
+        {
+          "name": "End Conversation",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/chat/conversation/{{session_id}}/end",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Voice Bot Campaigns",
+      "item": [
+        {
+          "name": "Create Campaign",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('campaign_id', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/voicebot/campaigns",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"January Lead Campaign\",\n  \"description\": \"Lead generation campaign for January 2026\",\n  \"script_config\": {\n    \"questions\": [\n      {\"id\": \"q1\", \"text\": \"Are you interested in a personal loan?\"},\n      {\"id\": \"q2\", \"text\": \"What amount are you looking for?\"}\n    ]\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "List Campaigns",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/voicebot/campaigns",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]
+          }
+        },
+        {
+          "name": "Get Campaign",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/voicebot/campaigns/{{campaign_id}}",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]
+          }
+        },
+        {
+          "name": "Upload Contacts CSV",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/voicebot/campaigns/{{campaign_id}}/contacts",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "file", "type": "file", "src": ""}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Campaign Contacts",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/voicebot/campaigns/{{campaign_id}}/contacts",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]
+          }
+        },
+        {
+          "name": "Start Campaign",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/voicebot/campaigns/{{campaign_id}}/start",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Internal APIs",
+      "item": [
+        {
+          "name": "Voice Bot Call Callback",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/internal/voicebot/callback?contact_id=CONTACT_UUID&status=QUALIFIED&call_duration=120&qualification_score=85",
+              "host": ["{{base_url}}"],
+              "path": ["internal", "voicebot", "callback"],
+              "query": [
+                {"key": "contact_id", "value": "CONTACT_UUID"},
+                {"key": "status", "value": "QUALIFIED"},
+                {"key": "call_duration", "value": "120"},
+                {"key": "qualification_score", "value": "85"}
+              ]
+            },
+            "header": [{"key": "X-Service-Name", "value": "voicebot-engine"}]
+          }
+        }
+      ]
+    }
+  ]
+}

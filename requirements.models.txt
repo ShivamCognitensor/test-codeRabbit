@@ -1,0 +1,14 @@
+# Optional dependencies for open-source voice models.
+#
+# Install with:
+#   pip install -r requirements.txt -r requirements.models.txt
+
+# Whisper v3 Turbo (STT)
+faster-whisper>=1.1.0
+ctranslate2>=4.5.0
+
+# Kokoro (TTS)
+kokoro>=0.4.0
+
+# Audio array utilities
+soundfile>=0.12.1

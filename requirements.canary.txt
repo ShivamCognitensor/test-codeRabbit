@@ -1,0 +1,8 @@
+# Canary Qwen 2.5B (NVIDIA NeMo SALM) optional dependencies.
+#
+# This stack is heavy; keep it separate.
+# Install with:
+#   pip install -r requirements.txt -r requirements.canary.txt
+
+nemo_toolkit[asr]>=2.0.0
+torch>=2.2.0
