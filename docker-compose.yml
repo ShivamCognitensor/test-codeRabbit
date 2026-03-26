@@ -1,0 +1,32 @@
+services:
+  lms-finai:
+    build: .
+    container_name: lms-finai
+    ports:
+      - "8007:8007"
+    env_file:
+      - ../.env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8007
+      DEBUG: ${DEBUG:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APP_ENV: ${APP_ENV:-production}
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/lms_finai_db
+      IDENTITY_SERVICE_URL: ${IDENTITY_SERVICE_URL}
+      CONFIG_SERVICE_URL: ${CONFIG_SERVICE_URL}
+      LEAD_OPS_SERVICE_URL: ${LEAD_OPS_SERVICE_URL}
+      AUDIT_SERVICE_URL: ${AUDIT_SERVICE_URL}
+      NOTIFICATION_SERVICE_URL: ${NOTIFICATION_SERVICE_URL}
+      SERVICE_CLIENT_ID: ${FINAI_SERVICE_CLIENT_ID}
+      SERVICE_CLIENT_SECRET: ${FINAI_SERVICE_CLIENT_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      BOLNA_API_KEY: ${BOLNA_API_KEY}
+      BOLNA_WEBHOOK_SECRET: ${BOLNA_WEBHOOK_SECRET}
+    networks:
+      - lms-network
+    restart: unless-stopped
+
+networks:
+  lms-network:
+    external: true
